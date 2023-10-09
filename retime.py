@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 from datetime import datetime, timedelta
-from exif import Image
 from zoneinfo import ZoneInfo
+import piexif
 
 # Set the directory and starting time
 dir = "/path/to/image/folder/"
@@ -14,21 +14,28 @@ digitized_time = datetime(2023, 10, 8, 20, 0, 0, tzinfo=timezone)
 # Find all jpg and jpeg files and sort by name
 images = []
 for f in Path(dir).iterdir():
-    if f.is_file() and f.lower().endswith(('.jpg', '.jpeg')):
-        images.append(f)
+    if f.is_file() and str(f).lower().endswith((".jpg", ".jpeg")):
+        images.append(str(f))
 
 images.sort()
 
 # Loop through images
 for i, image in enumerate(images):
     # Open image
-    with open(os.path.join(dir, image), 'rb') as f:
-        img = Image(f)
+    exif_dict = piexif.load(image)
+
+    # Remove old EXIF
+    piexif.remove(image)
 
     # Set time, incrementing by 1 minute each loop
-    img.datetime_original = start_time + timedelta(minutes=i)
-    img.datetime_digitized = digitized_time
+    start_time_strf = start_time.strftime('%Y:%m:%d %H:%M:%S')
+    exif_dict['0th'][piexif.ImageIFD.DateTime] = start_time_strf
+    exif_dict['Exif'][piexif.ExifIFD.DateTimeOriginal] = start_time_strf
 
-    # Save image
-    with open(os.path.join(dir, image), 'wb') as new_f:
-        new_f.write(img.get_file())
+    exif_dict['Exif'][piexif.ExifIFD.DateTimeDigitized] = digitized_time.strftime('%Y:%m:%d %H:%M:%S')
+
+    start_time += timedelta(minutes=1)
+    digitized_time += timedelta(minutes=1)
+
+    exif_bytes = piexif.dump(exif_dict)
+    piexif.insert(exif_bytes, image)
