@@ -28,11 +28,11 @@ for i, image in enumerate(images):
     piexif.remove(image)
 
     # Set time, incrementing by 1 minute each loop
-    start_time_strf = start_time.strftime('%Y:%m:%d %H:%M:%S')
-    exif_dict['0th'][piexif.ImageIFD.DateTime] = start_time_strf
-    exif_dict['Exif'][piexif.ExifIFD.DateTimeOriginal] = start_time_strf
+    start_time_strf = start_time.strftime("%Y:%m:%d %H:%M:%S")
+    exif_dict["0th"][piexif.ImageIFD.DateTime] = start_time_strf
+    exif_dict["Exif"][piexif.ExifIFD.DateTimeOriginal] = start_time_strf
 
-    exif_dict['Exif'][piexif.ExifIFD.DateTimeDigitized] = digitized_time.strftime('%Y:%m:%d %H:%M:%S')
+    exif_dict["Exif"][piexif.ExifIFD.DateTimeDigitized] = digitized_time.strftime("%Y:%m:%d %H:%M:%S")
 
     start_time += timedelta(minutes=1)
     digitized_time += timedelta(minutes=1)
