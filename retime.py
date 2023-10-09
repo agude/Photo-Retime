@@ -5,7 +5,7 @@ from exif import Image
 from zoneinfo import ZoneInfo
 
 # Set the directory and starting time
-dir = '/path/to/directory'
+dir = "/path/to/image/folder/"
 
 timezone = ZoneInfo("America/Los_Angeles")
 start_time = datetime(1999, 4, 1, 8, 0, 0, tzinfo=timezone)
